@@ -87,6 +87,8 @@ async function render() {
   const publicRoutes = ['#/login', '#/register', '#/apply', '#/'];
   if (!State.token && !publicRoutes.includes(key)) return navigate('#/login');
   if (State.token && (key === '#/login' || key === '#/' )) return navigate(homeFor(State.user));
+  // bare root (no hash) → send visitors to the login/sign-in front door
+  if (key === '#/') return navigate('#/login');
 
   const handler = routes[key] || routes['#/404'];
   await handler({ seg1, seg2, seg3, hash });
