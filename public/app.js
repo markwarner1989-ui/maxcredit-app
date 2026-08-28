@@ -249,6 +249,22 @@ function shell(active, content, { title } = {}) {
 }
 window.doLogout = () => { clearSession(); toast('Logged out'); navigate('#/login'); };
 
+// Securely open a customer document: fetch WITH the admin's login token, then
+// show it. A plain link can't carry the token, so we fetch a blob and open it.
+window.viewDoc = async (id, type) => {
+  const w = window.open('', '_blank'); // open synchronously so popup blockers allow it
+  if (w) w.document.write('<p style="font-family:sans-serif;padding:24px;color:#555">Loading document…</p>');
+  try {
+    const res = await fetch('/api/admin/documents/' + id, { headers: { Authorization: 'Bearer ' + State.token } });
+    if (!res.ok) throw new Error('Could not load document');
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    if (w) { w.location.href = url; }
+    else { const a = document.createElement('a'); a.href = url; a.download = (type || 'document'); a.click(); }
+    setTimeout(() => URL.revokeObjectURL(url), 60000);
+  } catch (e) { if (w) w.close(); toast(e.message, 'error'); }
+};
+
 function statCard(label, value, sub, color='navy') {
   return `<div class="card p-5">
     <div class="text-sm text-mute">${label}</div>
@@ -336,7 +352,7 @@ async function adminCustomers(id) {
 async function adminCustomerDetail(id) {
   app().innerHTML = shell('#/admin/customers', spinner());
   const { application: a } = await api('/admin/applications/' + id);
-  const docLink = (d) => `<a href="/api/admin/documents/${d.id}" target="_blank" class="text-brand hover:underline">${esc(d.doc_type.replace(/_/g,' '))}</a>`;
+  const docLink = (d) => `<button type="button" onclick="viewDoc('${d.id}','${esc(d.doc_type)}')" class="text-brand hover:underline font-medium">${esc(d.doc_type.replace(/_/g,' '))}</button>`;
   $('#view').innerHTML = `
     <a href="#/admin/customers" class="text-sm text-brand">← Back to customers</a>
     <div class="flex flex-wrap items-center justify-between gap-3 mt-2 mb-6">
