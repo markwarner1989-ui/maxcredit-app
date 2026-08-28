@@ -1,0 +1,49 @@
+# Render Blueprint — one-click deploy for the Max Credit Solution app.
+# In Render: New + → Blueprint → connect this repo. Render reads this file.
+services:
+  - type: web
+    name: maxcredit-app
+    runtime: node
+    plan: starter            # "free" also works; starter keeps the disk + avoids sleep
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /api/health
+    # Persistent disk so the SQLite database + uploaded documents survive restarts/deploys.
+    disk:
+      name: maxcredit-data
+      mountPath: /data
+      sizeGB: 1
+    envVars:
+      - key: DATA_DIR
+        value: /data
+      - key: JWT_SECRET
+        generateValue: true        # Render generates a strong secret
+      - key: ADMIN_EMAIL
+        value: admin@maxcreditsolution.com
+      - key: ADMIN_PASSWORD
+        sync: false                # set your own in the dashboard
+      - key: COMPANY_NAME
+        value: Max Credit Solution
+      - key: COMPANY_PHONE
+        value: "(855) 348-8758"
+      - key: SIGNUP_FEE
+        value: "199"
+      - key: MONTHLY_FEE
+        value: "199"
+      - key: PLAN_MONTHS
+        value: "12"
+      # --- optional: fill these in the Render dashboard when ready ---
+      - key: STRIPE_SECRET_KEY
+        sync: false
+      - key: STRIPE_PUBLISHABLE_KEY
+        sync: false
+      - key: SMTP_HOST
+        sync: false
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASS
+        sync: false
+      - key: CREDIT_ENGINE_WEBHOOK
+        sync: false
+      - key: PUBLIC_URL
+        sync: false
