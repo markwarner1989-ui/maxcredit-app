@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Max Credit Solution</title>
+  <meta name="description" content="Max Credit Solution — credit restoration enrollment & customer portal." />
+  <meta name="theme-color" content="#1f2a44" />
+  <link rel="manifest" href="/manifest.json" />
+  <link rel="apple-touch-icon" href="/icons/icon-192.png" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Max Credit" />
+  <link rel="icon" href="/icons/favicon.png" />
+  <link rel="stylesheet" href="/tailwind.css" />
+  <link rel="stylesheet" href="/styles.css" />
+  <!-- Stripe.js: only needed for LIVE card payments; app runs fine without it in demo mode -->
+  <script src="https://js.stripe.com/v3/"></script>
+</head>
+<body class="bg-paper text-ink font-sans antialiased">
+  <div id="app"></div>
+  <div id="toast" class="fixed z-50 bottom-4 left-1/2 -translate-x-1/2 hidden"></div>
+  <script src="/app.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => navigator.serviceWorker.register('/service-worker.js').catch(()=>{}));
+    }
+  </script>
+</body>
+</html>
